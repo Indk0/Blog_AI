@@ -1,13 +1,13 @@
 import openai
+from dotenv import dotenv_values
 
-with open("secret.txt", "r") as f:
-    secret_key = f.read().strip()
+config = dotenv_values(".env")
 
-openai.api_key = secret_key
+openai.api_key = config['OPENAPI_KEY']
 
 def generate_blog(paragraph_topic):
   response = openai.completions.create(
-    model = 'gpt-4.o',
+    model = 'gpt-3.5-turbo-instruct',
     prompt = 'Write a paragraph about the following topic. ' + paragraph_topic,
     max_tokens = 400,
     temperature = 0.3
@@ -16,6 +16,16 @@ def generate_blog(paragraph_topic):
   retrieve_blog = response.choices[0].text
 
   return retrieve_blog
+
+keep_writing = True
+
+while keep_writing:
+  answer = input('Write a paragraph? Y for yes, anything else for no. ')
+  if (answer == 'Y'):
+    paragraph_topic = input('What should this paragraph talk about? ')
+    print(generate_blog(paragraph_topic))
+  else:
+    keep_writing = False
 
 
 print(generate_blog('Why London is better than your city.'))
